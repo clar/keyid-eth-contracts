@@ -58,7 +58,9 @@ contract AccountCreator is MultiOwned {
      */
     function createCounterfactualAccount(address[] calldata _keys, address[] calldata _backups, bytes32 _salt) external onlyMultiOwners {
         // better to use abi.encode to eliminate potential collision
-        bytes32 newSalt = keccak256(abi.encode(_salt, _keys, _backups));
+        bytes32 accountID = keccak256(abi.encode(_keys, _backups));
+        bytes32 newSalt = keccak256(abi.encode(accountID, _salt)); // _salt used for zkSync PublicKey
+
         bytes memory code = abi.encodePacked(type(AccountProxy).creationCode, uint256(accountImpl));
         address payable accountProxy;
         // solium-disable-next-line security/no-inline-assembly
